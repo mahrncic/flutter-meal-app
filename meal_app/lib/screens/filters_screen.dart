@@ -3,6 +3,10 @@ import 'package:flutter_complete_guide/widgets/main_drawer.dart';
 
 class FiltersScreen extends StatefulWidget {
   static const routeName = '/filters';
+  final Function saveFilters;
+  final Map<String, bool> currentFilters;
+
+  const FiltersScreen({this.saveFilters, this.currentFilters});
 
   @override
   State<FiltersScreen> createState() => _FiltersScreenState();
@@ -10,9 +14,19 @@ class FiltersScreen extends StatefulWidget {
 
 class _FiltersScreenState extends State<FiltersScreen> {
   var _glutenFree = false;
-  var _vegeterian = false;
+  var _vegetarian = false;
   var _vegan = false;
   var _lactoseFree = false;
+
+  @override
+  void initState() {
+    _glutenFree = widget.currentFilters['gluten'];
+    _lactoseFree = widget.currentFilters['lactose'];
+    _vegetarian = widget.currentFilters['vegetarian'];
+    _vegan = widget.currentFilters['vegan'];
+
+    super.initState();
+  }
 
   Widget _buildSwitchListTile(String title, String description,
       bool currentValue, Function updateValue) {
@@ -29,6 +43,20 @@ class _FiltersScreenState extends State<FiltersScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Your Filters'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              final selectedFilters = {
+                'gluten': _glutenFree,
+                'lactose': _lactoseFree,
+                'vegan': _vegan,
+                'vegetarian': _vegetarian,
+              };
+              widget.saveFilters(selectedFilters);
+            },
+            icon: Icon(Icons.save),
+          )
+        ],
       ),
       drawer: MainDrawer(),
       body: Column(
@@ -64,12 +92,12 @@ class _FiltersScreenState extends State<FiltersScreen> {
                   },
                 ),
                 _buildSwitchListTile(
-                  'Vegeterian',
-                  'Only include vegeterian meals.',
-                  _vegeterian,
+                  'Vegetarian',
+                  'Only include vegetarian meals.',
+                  _vegetarian,
                   (newValue) {
                     setState(() {
-                      _vegeterian = newValue;
+                      _vegetarian = newValue;
                     });
                   },
                 ),
